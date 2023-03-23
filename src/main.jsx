@@ -9,20 +9,11 @@ class CurrencyConverter extends React.Component {
     //binding the methods
     handleChangeUSD = this.handleChangeUSD.bind(this);
     handleChangeEUR = this.handleChangeEUR.bind(this);
+    this.updateExchangeRate = this.updateExchangeRate.bind(this);
   }
   //getting conversion rate from the API
   componentDidMount() {
-    const stockApiKey = "OMZGXK5NKES2KJV5";
-    const webUrl = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=EUR&apikey=${stockApiKey}`;
-    fetch(webUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        let rate = data["Realtime Currency Exchange Rate"]["5. Exchange Rate"];
-        
-        this.setState({ rate: rate });
-        console.log(this.state.rate);
-      });
+    this.updateExchangeRate();
   }
   //conversion methods from usd to euro and vice versa
   toUSD = (rate, eur) => {
@@ -49,12 +40,29 @@ class CurrencyConverter extends React.Component {
     this.setState({ eur: value });
     this.setState({ usd: this.toUSD(rate, value) });
   };
-  render() {  
+  updateExchangeRate() {
+    const stockApiKey = "OMZGXK5NKES2KJV5";
+    const webUrl = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=EUR&apikey=${stockApiKey}`;
+    fetch(webUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        let rate = data["Realtime Currency Exchange Rate"]["5. Exchange Rate"];
+      
+        this.setState({ rate: rate });
+        console.log(this.state.rate);
+      });
+  }
+
+  render() {
+    const style = {
+      textAlign: "center"
+    };  
     return (
       <div className="main-container">
         <div className="currency-converter">
             <h1>Currency Converter</h1>
-            <h3>USD to EUR <br />Current Exchange Rate : {this.state.rate}</h3>
+            <h3 style={style}>USD to EUR <br />Current Exchange Rate : {this.state.rate}</h3>
           <div className="currency">
             <div className="usd">
               <label>$-USD-$</label>

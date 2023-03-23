@@ -50,6 +50,7 @@ var CurrencyConverter = function (_React$Component) {
     //binding the methods
     handleChangeUSD = _this.handleChangeUSD.bind(_this);
     handleChangeEUR = _this.handleChangeEUR.bind(_this);
+    _this.updateExchangeRate = _this.updateExchangeRate.bind(_this);
     return _this;
   }
   //getting conversion rate from the API
@@ -58,6 +59,17 @@ var CurrencyConverter = function (_React$Component) {
   _createClass(CurrencyConverter, [{
     key: "componentDidMount",
     value: function componentDidMount() {
+      this.updateExchangeRate();
+    }
+    //conversion methods from usd to euro and vice versa
+
+    //methods to handle the change in the input fields and update the state of the USD
+
+    //methods to handle the change in the input fields and update the state of the EUR
+
+  }, {
+    key: "updateExchangeRate",
+    value: function updateExchangeRate() {
       var _this2 = this;
 
       var stockApiKey = "OMZGXK5NKES2KJV5";
@@ -72,15 +84,12 @@ var CurrencyConverter = function (_React$Component) {
         console.log(_this2.state.rate);
       });
     }
-    //conversion methods from usd to euro and vice versa
-
-    //methods to handle the change in the input fields and update the state of the USD
-
-    //methods to handle the change in the input fields and update the state of the EUR
-
   }, {
     key: "render",
     value: function render() {
+      var style = {
+        textAlign: "center"
+      };
       return React.createElement(
         "div",
         { className: "main-container" },
@@ -94,7 +103,7 @@ var CurrencyConverter = function (_React$Component) {
           ),
           React.createElement(
             "h3",
-            null,
+            { style: style },
             "USD to EUR ",
             React.createElement("br", null),
             "Current Exchange Rate : ",

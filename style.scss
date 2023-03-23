@@ -1,6 +1,6 @@
 .main-container {
   border: 3px solid black;
-  border-radius: 5px;
+  border-radius: 10px;
 
   margin: auto;
   width: 750px;
@@ -25,6 +25,10 @@
     .currency {
       display: flex;
       flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      
+      
       .converter {
         display: flex;
         flex-direction: row;
@@ -35,6 +39,7 @@
       }
       .eur{
         margin-left: 1rem;
+
       }
       label{
         margin-right: 1rem;

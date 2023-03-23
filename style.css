@@ -1,6 +1,6 @@
 .main-container {
   border: 3px solid black;
-  border-radius: 5px;
+  border-radius: 10px;
   margin: auto;
   width: 750px;
   margin-top: 3rem;
@@ -21,6 +21,8 @@
 .main-container .currency-converter .currency {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 .main-container .currency-converter .currency .converter {
   display: flex;
