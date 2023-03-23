@@ -14,112 +14,87 @@ var CurrencyConverter = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (CurrencyConverter.__proto__ || Object.getPrototypeOf(CurrencyConverter)).call(this, props));
 
-    _this.toSelectedCurrency = function (rate, convertedCurrencyValue) {
-      var selectedCurrencyValue = convertedCurrencyValue * rate;
-
-      return selectedCurrencyValue.toFixed(2);
+    _this.updateValueOfMainCurrency = function (rate, convertedCurrencyValue) {
+      var mainCurrencyValue = convertedCurrencyValue * rate;
+      return mainCurrencyValue.toFixed(2);
     };
 
-    _this.toConvertedCurrency = function (rate, selectedCurrencyValue) {
-      var convertedCurrencyValue = selectedCurrencyValue * rate;
-
+    _this.updateValueOfConvertedCurrency = function (rate, mainCurrencyValue) {
+      var convertedCurrencyValue = mainCurrencyValue * rate;
       return convertedCurrencyValue.toFixed(2);
     };
 
-    _this.handleChangeUSD = function (event) {
-      event.preventDefault();
-      var selectedCurrencyValue = event.target.selectedCurrencyValue;
-      var rate = _this.state.rate;
-
-
-      _this.setState({ selectedCurrencyValue: selectedCurrencyValue });
-      _this.setState({ convertedCurrencyValue: _this.toConvertedCurrency(rate, selectedCurrencyValue) });
-    };
-
-    _this.handleChangeEUR = function (event) {
+    _this.handleInputChange = function (event) {
       event.preventDefault();
       var convertedCurrencyValue = event.target.convertedCurrencyValue;
+      var mainCurrencyValue = event.target.mainCurrencyValue;
       var rate = _this.state.rate;
 
-
-      _this.setState({ convertedCurrencyValue: convertedCurrencyValue });
-      _this.setState({ selectedCurrencyValue: _this.toSelectedCurrency(rate, convertedCurrencyValue) });
+      _this.setState({ mainCurrencyValue: _this.updateValueOfMainCurrency(rate, convertedCurrencyValue) });
+      _this.setState({ convertedCurrencyValue: _this.updateValueOfConvertedCurrency(rate, mainCurrencyValue) });
+      _this.updateExchangeRate(_this.state.mainCurrency, _this.state.convertedCurrency);
     };
 
-    _this.updatedCurrencyToConvert = function (event) {
+    _this.setStateForCurrency = function (event) {
       event.preventDefault();
-      var value = event.target.value;
+      var mainCurrency = event.target.mainCurrency;
+      var convertedCurrency = event.target.convertedCurrency;
 
-      _this.setState({ convertedCurrency: value });
-      if (value !== _this.state.selectedCurrency) {
-        _this.updateExchangeRate();
-      }
-    };
-
-    _this.UpdatedSelectedCurrency = function (event) {
-      event.preventDefault();
-      var value = event.target.value;
-
-      _this.setState({ selectedCurrency: value });
-      _this.updateExchangeRate();
-      if (value !== _this.state.convertedCurrency) {
-        _this.updateExchangeRate();
-      }
+      _this.setState({ mainCurrency: mainCurrency });
+      _this.setState({ convertedCurrency: convertedCurrency });
     };
 
     _this.state = {
-      selectedCurrency: "USD",
+      mainCurrency: "USD",
       convertedCurrency: "EUR",
-      selectedCurrencyValue: 1,
+      mainCurrencyValue: 1,
       convertedCurrencyValue: 0,
-
       rate: 0.89
     };
     //binding the methods
-    handleChangeUSD = _this.handleChangeUSD.bind(_this);
-    handleChangeEUR = _this.handleChangeEUR.bind(_this);
-    updatedCurrencyToConvert = _this.updatedCurrencyToConvert.bind(_this);
-    UpdatedSelectedCurrency = _this.UpdatedSelectedCurrency.bind(_this);
-
-    _this.updateExchangeRate = _this.updateExchangeRate.bind(_this);
+    _this.updateValueOfMainCurrency = _this.updateValueOfMainCurrency.bind(_this);
+    _this.updateValueOfConvertedCurrency = _this.updateValueOfConvertedCurrency.bind(_this);
+    updateExchangeRate = _this.updateExchangeRate.bind(_this);
+    _this.handleInputChange = _this.handleInputChange.bind(_this);
+    _this.setStateForCurrency = _this.setStateForCurrency.bind(_this);
     return _this;
   }
-  //getting conversion rate from the API
+
+  // converting the selected currency to the converted currency
+
+
+  // converting the converted currency to the selected currency
+
+
+  //methods to handle the change in the input fields and update the state of the USD
+
+
+  //update the currency's being converted
 
 
   _createClass(CurrencyConverter, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {}
-    //this.updateExchangeRate();
-
-    //conversion methods from usd to euro and vice versa
-
-    //methods to handle the change in the input fields and update the state of the USD
-
-    //methods to handle the change in the input fields and update the state of the EUR
-
-    //update the currency's being converted
-
-    //update the currency's being converted
-
-  }, {
     key: "updateExchangeRate",
-    value: function updateExchangeRate() {
+    value: function updateExchangeRate(mainCurrency, convertedCurrency) {
       var _this2 = this;
 
-      var selectedCurrency = this.state.selectedCurrency;
-      var convertedCurrency = this.state.convertedCurrency;
+      var mainCurrencyType = this.state.mainCurrency;
+      var convertedCurrencyType = this.state.convertedCurrency;
       var stockApiKey = "OMZGXK5NKES2KJV5";
-      var webUrl = "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=" + selectedCurrency + "&to_currency=" + convertedCurrency + "&apikey=" + stockApiKey;
-      fetch(webUrl).then(function (response) {
-        return response.json();
-      }).then(function (data) {
-        console.log(data);
-        var rate = data["Realtime Currency Exchange Rate"]["5. Exchange Rate"];
+      var webUrl = "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=" + mainCurrencyType + "&to_currency=" + convertedCurrencyType + "&apikey=" + stockApiKey;
 
-        _this2.setState({ rate: rate });
-        console.log(_this2.state.rate);
-      });
+      if (mainCurrency && convertedCurrency) {
+        fetch(webUrl).then(function (response) {
+          return response.json();
+        }).then(function (data) {
+          console.log(data);
+          var rate = data["Realtime Currency Exchange Rate"]["5. Exchange Rate"];
+          _this2.setState({ rate: rate });
+
+          console.log(_this2.state.rate + " rate");
+          console.log(_this2.state.mainCurrency + " mainCurrency");
+          console.log(_this2.state.convertedCurrency + " convertedCurrency");
+        });
+      }
     }
   }, {
     key: "render",
@@ -141,7 +116,7 @@ var CurrencyConverter = function (_React$Component) {
           React.createElement(
             "h3",
             { style: style },
-            this.state.selectedCurrency,
+            this.state.mainCurrency,
             " to ",
             this.state.convertedCurrency,
             " ",
@@ -157,42 +132,42 @@ var CurrencyConverter = function (_React$Component) {
               { className: "usd" },
               React.createElement(
                 "select",
-                { onChange: this.UpdatedSelectedCurrency },
+                { onChange: this.setStateForCurrency },
                 React.createElement(
                   "option",
                   { value: "USD" },
-                  "United States Dollar"
+                  "USD"
                 ),
                 React.createElement(
                   "option",
                   { value: "EUR" },
-                  "EURO"
+                  "EUR"
                 ),
                 React.createElement(
                   "option",
                   { value: "JPY" },
-                  "Japanese Yen"
+                  "JPY"
                 ),
                 React.createElement(
                   "option",
                   { value: "GBP" },
-                  "British Pound Sterling"
+                  "GBP"
                 ),
                 React.createElement(
                   "option",
                   { value: "CHF" },
-                  "Swiss Franc"
+                  "CHF"
                 )
               ),
               React.createElement(
                 "label",
                 null,
-                this.state.selectedCurrency
+                this.state.mainCurrency
               ),
               React.createElement("input", {
                 type: "number",
-                value: this.state.selectedCurrencyValue,
-                onChange: this.handleChangeUSD
+                value: this.state.mainCurrencyValue,
+                onChange: this.handleInputChange
               })
             ),
             React.createElement(
@@ -200,31 +175,31 @@ var CurrencyConverter = function (_React$Component) {
               { className: "eur" },
               React.createElement(
                 "select",
-                { onChange: this.updatedCurrencyToConvert },
+                { onChange: this.setStateForCurrency },
                 React.createElement(
                   "option",
                   { value: "EUR" },
-                  "EURO"
+                  "EUR"
                 ),
                 React.createElement(
                   "option",
                   { value: "USD" },
-                  "United States Dollar"
+                  "USD"
                 ),
                 React.createElement(
                   "option",
                   { value: "JPY" },
-                  "Japanese Yen"
+                  "JPY"
                 ),
                 React.createElement(
                   "option",
                   { value: "GBP" },
-                  "British Pound Sterling"
+                  "GBP"
                 ),
                 React.createElement(
                   "option",
                   { value: "CHF" },
-                  "Swiss Franc"
+                  "CHF"
                 )
               ),
               React.createElement(
@@ -235,7 +210,7 @@ var CurrencyConverter = function (_React$Component) {
               React.createElement("input", {
                 type: "number",
                 value: this.state.convertedCurrencyValue,
-                onChange: this.handleChangeEUR
+                onChange: this.handleInputChange
               })
             )
           )

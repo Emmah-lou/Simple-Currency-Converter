@@ -1,98 +1,84 @@
-
-
 class CurrencyConverter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedCurrency: "USD",
+      mainCurrency: "USD",
       convertedCurrency: "EUR",
-      selectedCurrencyValue: 1,
+      mainCurrencyValue: 1,
       convertedCurrencyValue: 0,
-
       rate: 0.89
     };
     //binding the methods
-    handleChangeUSD = this.handleChangeUSD.bind(this);
-    handleChangeEUR = this.handleChangeEUR.bind(this);
-    updatedCurrencyToConvert = this.updatedCurrencyToConvert.bind(this);
-    UpdatedSelectedCurrency = this.UpdatedSelectedCurrency.bind(this);
-
-    this.updateExchangeRate = this.updateExchangeRate.bind(this);
+    this.updateValueOfMainCurrency = this.updateValueOfMainCurrency.bind(this);
+    this.updateValueOfConvertedCurrency = this.updateValueOfConvertedCurrency.bind(this);
+    updateExchangeRate = this.updateExchangeRate.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.setStateForCurrency = this.setStateForCurrency.bind(this);
   }
-  //getting conversion rate from the API
-  componentDidMount() {
-    //this.updateExchangeRate();
 
-  }
-  //conversion methods from usd to euro and vice versa
-  toSelectedCurrency = (rate, convertedCurrencyValue) => {
-    let selectedCurrencyValue = convertedCurrencyValue * rate;
 
-    return selectedCurrencyValue.toFixed(2);
 
+  // converting the selected currency to the converted currency
+  updateValueOfMainCurrency = (rate, convertedCurrencyValue) => {
+    let mainCurrencyValue = convertedCurrencyValue * rate;
+    return mainCurrencyValue.toFixed(2);
   };
-  toConvertedCurrency = (rate, selectedCurrencyValue) => {
-    let convertedCurrencyValue = selectedCurrencyValue * rate;
 
+
+  // converting the converted currency to the selected currency
+  updateValueOfConvertedCurrency = (rate, mainCurrencyValue) => {
+    let convertedCurrencyValue = mainCurrencyValue * rate;
     return convertedCurrencyValue.toFixed(2);
+  };
 
-  };
+
+
   //methods to handle the change in the input fields and update the state of the USD
-  handleChangeUSD = (event) => {
-    event.preventDefault();
-    const { selectedCurrencyValue } = event.target;
-    const { rate } = this.state;
-    
-    this.setState({ selectedCurrencyValue: selectedCurrencyValue });
-    this.setState({ convertedCurrencyValue: this.toConvertedCurrency(rate, selectedCurrencyValue) });
-  };
-  //methods to handle the change in the input fields and update the state of the EUR
-  handleChangeEUR = (event) => {
+  handleInputChange = (event) => {
     event.preventDefault();
     const { convertedCurrencyValue } = event.target;
+    const { mainCurrencyValue } = event.target;
     const { rate } = this.state;
-      
-    this.setState({ convertedCurrencyValue: convertedCurrencyValue });
-    this.setState({ selectedCurrencyValue: this.toSelectedCurrency(rate, convertedCurrencyValue) });
+    this.setState({ mainCurrencyValue: this.updateValueOfMainCurrency(rate, convertedCurrencyValue) });
+    this.setState({ convertedCurrencyValue: this.updateValueOfConvertedCurrency(rate, mainCurrencyValue) });
+    this.updateExchangeRate(this.state.mainCurrency, this.state.convertedCurrency);
+    
   };
-  //update the currency's being converted
-  updatedCurrencyToConvert = (event) => {
-    event.preventDefault();
-    const { value } = event.target;
-    this.setState({ convertedCurrency: value });
-    if (value !== this.state.selectedCurrency) {
-      this.updateExchangeRate();
-    }
-
-  };
-  //update the currency's being converted
-  UpdatedSelectedCurrency = (event) => {
-    event.preventDefault();
-    const { value } = event.target;
-    this.setState({ selectedCurrency: value });
-    this.updateExchangeRate();
-    if (value !== this.state.convertedCurrency) {
-      this.updateExchangeRate();
-    }
-
-  };
-
-  updateExchangeRate() {
-    const selectedCurrency = this.state.selectedCurrency;
-    const convertedCurrency = this.state.convertedCurrency;
-    const stockApiKey = "OMZGXK5NKES2KJV5";
-    const webUrl = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${selectedCurrency}&to_currency=${convertedCurrency}&apikey=${stockApiKey}`;
-    fetch(webUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        let rate = data["Realtime Currency Exchange Rate"]["5. Exchange Rate"];
-      
-        this.setState({ rate: rate });
-        console.log(this.state.rate);
-      });
-  }
   
+  //update the currency's being converted
+  setStateForCurrency = (event) => {
+    event.preventDefault();
+    const { mainCurrency } = event.target;
+    const { convertedCurrency } = event.target;
+    this.setState({ mainCurrency: mainCurrency });
+    this.setState({ convertedCurrency: convertedCurrency });
+    
+  };
+  updateExchangeRate(mainCurrency, convertedCurrency) {
+    const mainCurrencyType = this.state.mainCurrency;
+    const convertedCurrencyType = this.state.convertedCurrency;
+    const stockApiKey = "OMZGXK5NKES2KJV5";
+    const webUrl = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${mainCurrencyType}&to_currency=${convertedCurrencyType}&apikey=${stockApiKey}`;
+
+    if(mainCurrency && convertedCurrency) {
+      fetch(webUrl)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          let rate = data["Realtime Currency Exchange Rate"]["5. Exchange Rate"];
+          this.setState({ rate: rate });
+          
+          
+          console.log(this.state.rate + " rate");
+          console.log(this.state.mainCurrency + " mainCurrency");
+          console.log(this.state.convertedCurrency + " convertedCurrency");
+          
+        });
+    }
+
+  }
+
+
   render() {
     const style = {
       textAlign: "center"
@@ -101,36 +87,36 @@ class CurrencyConverter extends React.Component {
       <div className="main-container">
         <div className="currency-converter">
             <h1>Currency Converter</h1>
-            <h3 style={style}>{this.state.selectedCurrency} to {this.state.convertedCurrency} <br />Current Exchange Rate : {this.state.rate}</h3>
+            <h3 style={style}>{this.state.mainCurrency} to {this.state.convertedCurrency} <br />Current Exchange Rate : {this.state.rate}</h3>
           <div className="currency">
             <div className="usd">
-              <select onChange={this.UpdatedSelectedCurrency}>
-                <option value="USD">United States Dollar</option>
-                <option value="EUR">EURO</option>
-                <option value="JPY">Japanese Yen</option>
-                <option value="GBP">British Pound Sterling</option>
-                <option value="CHF">Swiss Franc</option>
+              <select onChange={this.setStateForCurrency}>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="JPY">JPY</option>
+                <option value="GBP">GBP</option>
+                <option value="CHF">CHF</option>
               </select>
-              <label>{this.state.selectedCurrency}</label>
+              <label>{this.state.mainCurrency}</label>
               <input
                 type="number"
-                value={this.state.selectedCurrencyValue}
-                onChange={this.handleChangeUSD}
+                value={this.state.mainCurrencyValue}
+                onChange={this.handleInputChange}
               />
             </div>
             <div className="eur">
-              <select onChange={this.updatedCurrencyToConvert}>
-                <option value="EUR">EURO</option>
-                <option value="USD">United States Dollar</option>
-                <option value="JPY">Japanese Yen</option>
-                <option value="GBP">British Pound Sterling</option>
-                <option value="CHF">Swiss Franc</option>
+              <select onChange={this.setStateForCurrency}>
+                <option value="EUR">EUR</option>
+                <option value="USD">USD</option>
+                <option value="JPY">JPY</option>
+                <option value="GBP">GBP</option>
+                <option value="CHF">CHF</option>
               </select>
               <label>{this.state.convertedCurrency}</label>
               <input
                 type="number"
                 value={this.state.convertedCurrencyValue}
-                onChange={this.handleChangeEUR}
+                onChange={this.handleInputChange}
               />
             </div>
           </div>
