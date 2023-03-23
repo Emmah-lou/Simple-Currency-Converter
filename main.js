@@ -14,42 +14,73 @@ var CurrencyConverter = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (CurrencyConverter.__proto__ || Object.getPrototypeOf(CurrencyConverter)).call(this, props));
 
-    _this.toUSD = function (rate, eur) {
-      var usd = eur * (1 / rate);
-      return usd.toFixed(2);
+    _this.toSelectedCurrency = function (rate, convertedCurrencyValue) {
+      var selectedCurrencyValue = convertedCurrencyValue * rate;
+
+      return selectedCurrencyValue.toFixed(2);
     };
 
-    _this.toEUR = function (rate, usd) {
-      var eur = usd * rate;
-      return eur.toFixed(2);
+    _this.toConvertedCurrency = function (rate, selectedCurrencyValue) {
+      var convertedCurrencyValue = selectedCurrencyValue * rate;
+
+      return convertedCurrencyValue.toFixed(2);
     };
 
     _this.handleChangeUSD = function (event) {
       event.preventDefault();
-      var value = event.target.value;
+      var selectedCurrencyValue = event.target.selectedCurrencyValue;
       var rate = _this.state.rate;
 
-      _this.setState({ usd: value });
-      _this.setState({ eur: _this.toEUR(rate, value) });
+
+      _this.setState({ selectedCurrencyValue: selectedCurrencyValue });
+      _this.setState({ convertedCurrencyValue: _this.toConvertedCurrency(rate, selectedCurrencyValue) });
     };
 
     _this.handleChangeEUR = function (event) {
       event.preventDefault();
-      var value = event.target.value;
+      var convertedCurrencyValue = event.target.convertedCurrencyValue;
       var rate = _this.state.rate;
 
-      _this.setState({ eur: value });
-      _this.setState({ usd: _this.toUSD(rate, value) });
+
+      _this.setState({ convertedCurrencyValue: convertedCurrencyValue });
+      _this.setState({ selectedCurrencyValue: _this.toSelectedCurrency(rate, convertedCurrencyValue) });
+    };
+
+    _this.updatedCurrencyToConvert = function (event) {
+      event.preventDefault();
+      var value = event.target.value;
+
+      _this.setState({ convertedCurrency: value });
+      if (value !== _this.state.selectedCurrency) {
+        _this.updateExchangeRate();
+      }
+    };
+
+    _this.UpdatedSelectedCurrency = function (event) {
+      event.preventDefault();
+      var value = event.target.value;
+
+      _this.setState({ selectedCurrency: value });
+      _this.updateExchangeRate();
+      if (value !== _this.state.convertedCurrency) {
+        _this.updateExchangeRate();
+      }
     };
 
     _this.state = {
-      usd: 0,
-      eur: 0,
+      selectedCurrency: "USD",
+      convertedCurrency: "EUR",
+      selectedCurrencyValue: 1,
+      convertedCurrencyValue: 0,
+
       rate: 0.89
     };
     //binding the methods
     handleChangeUSD = _this.handleChangeUSD.bind(_this);
     handleChangeEUR = _this.handleChangeEUR.bind(_this);
+    updatedCurrencyToConvert = _this.updatedCurrencyToConvert.bind(_this);
+    UpdatedSelectedCurrency = _this.UpdatedSelectedCurrency.bind(_this);
+
     _this.updateExchangeRate = _this.updateExchangeRate.bind(_this);
     return _this;
   }
@@ -58,22 +89,28 @@ var CurrencyConverter = function (_React$Component) {
 
   _createClass(CurrencyConverter, [{
     key: "componentDidMount",
-    value: function componentDidMount() {
-      this.updateExchangeRate();
-    }
+    value: function componentDidMount() {}
+    //this.updateExchangeRate();
+
     //conversion methods from usd to euro and vice versa
 
     //methods to handle the change in the input fields and update the state of the USD
 
     //methods to handle the change in the input fields and update the state of the EUR
 
+    //update the currency's being converted
+
+    //update the currency's being converted
+
   }, {
     key: "updateExchangeRate",
     value: function updateExchangeRate() {
       var _this2 = this;
 
+      var selectedCurrency = this.state.selectedCurrency;
+      var convertedCurrency = this.state.convertedCurrency;
       var stockApiKey = "OMZGXK5NKES2KJV5";
-      var webUrl = "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=EUR&apikey=" + stockApiKey;
+      var webUrl = "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=" + selectedCurrency + "&to_currency=" + convertedCurrency + "&apikey=" + stockApiKey;
       fetch(webUrl).then(function (response) {
         return response.json();
       }).then(function (data) {
@@ -104,7 +141,10 @@ var CurrencyConverter = function (_React$Component) {
           React.createElement(
             "h3",
             { style: style },
-            "USD to EUR ",
+            this.state.selectedCurrency,
+            " to ",
+            this.state.convertedCurrency,
+            " ",
             React.createElement("br", null),
             "Current Exchange Rate : ",
             this.state.rate
@@ -116,13 +156,42 @@ var CurrencyConverter = function (_React$Component) {
               "div",
               { className: "usd" },
               React.createElement(
+                "select",
+                { onChange: this.UpdatedSelectedCurrency },
+                React.createElement(
+                  "option",
+                  { value: "USD" },
+                  "United States Dollar"
+                ),
+                React.createElement(
+                  "option",
+                  { value: "EUR" },
+                  "EURO"
+                ),
+                React.createElement(
+                  "option",
+                  { value: "JPY" },
+                  "Japanese Yen"
+                ),
+                React.createElement(
+                  "option",
+                  { value: "GBP" },
+                  "British Pound Sterling"
+                ),
+                React.createElement(
+                  "option",
+                  { value: "CHF" },
+                  "Swiss Franc"
+                )
+              ),
+              React.createElement(
                 "label",
                 null,
-                "$-USD-$"
+                this.state.selectedCurrency
               ),
               React.createElement("input", {
                 type: "number",
-                value: this.state.usd,
+                value: this.state.selectedCurrencyValue,
                 onChange: this.handleChangeUSD
               })
             ),
@@ -130,13 +199,42 @@ var CurrencyConverter = function (_React$Component) {
               "div",
               { className: "eur" },
               React.createElement(
+                "select",
+                { onChange: this.updatedCurrencyToConvert },
+                React.createElement(
+                  "option",
+                  { value: "EUR" },
+                  "EURO"
+                ),
+                React.createElement(
+                  "option",
+                  { value: "USD" },
+                  "United States Dollar"
+                ),
+                React.createElement(
+                  "option",
+                  { value: "JPY" },
+                  "Japanese Yen"
+                ),
+                React.createElement(
+                  "option",
+                  { value: "GBP" },
+                  "British Pound Sterling"
+                ),
+                React.createElement(
+                  "option",
+                  { value: "CHF" },
+                  "Swiss Franc"
+                )
+              ),
+              React.createElement(
                 "label",
                 null,
-                "\u20AC-EUR-\u20AC"
+                this.state.convertedCurrency
               ),
               React.createElement("input", {
                 type: "number",
-                value: this.state.eur,
+                value: this.state.convertedCurrencyValue,
                 onChange: this.handleChangeEUR
               })
             )
