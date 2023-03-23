@@ -1,0 +1,38 @@
+.main-container {
+  border: 3px solid black;
+  border-radius: 5px;
+  margin: auto;
+  width: 750px;
+  margin-top: 3rem;
+}
+.main-container .currency-converter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: beige;
+}
+.main-container .currency-converter h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+.main-container .currency-converter .currency {
+  display: flex;
+  flex-direction: row;
+}
+.main-container .currency-converter .currency .converter {
+  display: flex;
+  flex-direction: row;
+}
+.main-container .currency-converter .currency .usd {
+  margin-right: 1rem;
+  border: 1px, solid, black;
+}
+.main-container .currency-converter .currency .eur {
+  margin-left: 1rem;
+}
+.main-container .currency-converter .currency label {
+  margin-right: 1rem;
+}/*# sourceMappingURL=style.css.map */

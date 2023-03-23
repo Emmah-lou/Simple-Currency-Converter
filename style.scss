@@ -1,0 +1,44 @@
+.main-container {
+  border: 3px solid black;
+  border-radius: 5px;
+
+  margin: auto;
+  width: 750px;
+  margin-top: 3rem;
+
+
+  .currency-converter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-color: beige;
+    
+    
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+    }
+    
+    .currency {
+      display: flex;
+      flex-direction: row;
+      .converter {
+        display: flex;
+        flex-direction: row;
+      }
+      .usd{
+        margin-right: 1rem;
+        border: 1px, solid, black;
+      }
+      .eur{
+        margin-left: 1rem;
+      }
+      label{
+        margin-right: 1rem;
+      }
+    }
+  }
+}
